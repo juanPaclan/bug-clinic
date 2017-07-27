@@ -1,26 +1,45 @@
-var createServer = require("http").createServer;
- var server = createServer(function (req, res) {
-   if (req.method == 'GET') {
-     res.writeHead(200, {"ok" : true});
-     res.end('code of 200'+{ "ok" :true });
-   }
-   res.writeHead(404, {"error" : "notfound"});
-   res.end('code of 404'+{ "error" :"notfound" });
+var createServer = require('http').createServer;
+var trace = require('jstrace');
 
- });
- server.listen(9999, function () {
-   console.error("listening");
- });
+var server = createServer(function (req, res) {
+trace('request:start', {url: req.url});
+
+if (req.url === '/prognosis' && req.method === 'GET'){
+  var status = 200;
+  var body = {ok: true};
+  res.writeHead(status);
+  res.end(JSON.stringify(body));
+
+}
+var status = 404;
+var body = {error: 'notfound'};
 
 
- // var http = require('http')
- // var map = require('through2-map')
- // var server = http.createServer(function (req, res) {
- //   if (req.method !== 'POST') {
- //     return res.end('send me a POST\n')
- //   }
- //   req.pipe(map(function (chunk) {
- //     return chunk.toString().toUpperCase()
- //   })).pipe(res)
- // })
- // server.listen(Number(process.argv[2]))
+  res.writeHead(status);
+  res.end(JSON.stringify(body));
+trace('request:end', {statusCode: status, body: body});
+});
+server.listen(9999, function () { console.error('up') });
+//solucion
+// var createServer = require("http").createServer;
+//
+//    var trace = require("jstrace");
+//
+//    createServer(function (req, res) {
+//      trace("request:start", {url : req.url});
+//
+//      res.setHeader("content-type", "application/json");
+//
+//      var status, body;
+//      if (req.url === "/prognosis" && req.method === "GET") {
+//        status = 200; body = {ok : true};
+//      }
+//      else {
+//        status = 404; body = {error : "notfound"};
+//      }
+//
+//      res.writeHead(status);
+//      res.end(JSON.stringify(body));
+//
+//      trace("request:end", {statusCode : status, body : body});
+//    }).listen(9999, function () { console.error("up"); });
